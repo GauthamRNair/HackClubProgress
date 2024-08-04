@@ -18,7 +18,7 @@ const Green = "g"
 const Purple = "P"
 const Red = "R"
 
-var sticks = [[[], [], [], []], []]
+var sticks = [[["b"], ["b"], ["b"], ["b"]], []]
 
 
 setLegend(
@@ -194,6 +194,7 @@ HHHHHHHHHHHHHHHH`],
 3333333333333333`],
 )
 
+
 var game = map`
 GGGGGGGGGG
 GGGGGGGGGG
@@ -216,5 +217,24 @@ GGGGGGGGGG
 GGGGGGGGGG
 GGGGGGGGGG`
 
+function updateTile(x, y, newTile) {
+    const rows = game.trim().split("\n"); // Trim excess spaces and split into rows
+    const maxWidth = Math.max(...rows.map(row => row.length)); // Find the maximum row width
+
+    // Update the specific tile at (x, y) with newTile
+    let updatedRow = rows[y];
+    updatedRow = updatedRow.padEnd(maxWidth, ' '); // Pad the row to match maxWidth
+    updatedRow = updatedRow.substring(0, x) + newTile + updatedRow.substring(x + 1);
+
+    rows[y] = updatedRow;
+    game = rows.join("\n");
+
+    // Update the game display with the modified map
+    setMap(game);
+}
+
+updateTile(0, 0, "B");
+
+
 setBackground(Black);
-setMap(game);
+
