@@ -1,0 +1,15 @@
+/*
+First time? Check out the tutorial game:
+https://sprig.hackclub.com/gallery/getting_started
+
+@title: Tetris?
+@author: Gautham Nair
+@tags: []
+@addedOn: 2024-00-00
+*/
+
+
+setLegend(
+  [white, 
+
+setBackground(whiteBackground);
