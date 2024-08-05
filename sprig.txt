@@ -494,8 +494,9 @@ function update() {
       cellAbove = getStateTile(x, y-1);
       if(cell === "." && cellAbove != ".") {
         updateTileState(x, y, cellAbove);
-        addText(y.toString(), {x: 1, y: 0, color: color`3`});
+        addText(getGameTile(x, y), {x: 1, y: 0, color: color`3`});
         updateTile(x, y, getGameTile(x, y-1));
+        // more code needed for the pieces to actually fall, this is so frustrating
       }
     }
     y--;
