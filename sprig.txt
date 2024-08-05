@@ -482,33 +482,58 @@ function addPiece(pieceNum) {
   }
 }
 
-// updateTile(0, 0, "B");
-addPiece(6);
-
-function update() {
+function pieceUpdate() {
   let rowsRev = gameState.trim().split("\n").reverse();
-  var y = 19;
-  for(row of rowsRev.slice(0, rowsRev.length-1)) {
-    for(var x=0;x<row.length;x++) {
-      cell = row[x];
+  let anyFall = false;
+  const gameCopy = game;
+  const gameStateCopy = gameState;
+  for(var y=19;y>0;y--) {
+    for(var x=0;x<10;x++) {
+      cell = getStateTile(x, y);
       cellAbove = getStateTile(x, y-1);
-      if(cellAbove != "." && cellAbove != "\n") console.log(x, y);
-      if(cell === "." && cellAbove != ".") {
-        console.log(x, y, getStateTile(x, y-1), getStateTile(x, y));
+      if(cell === "." && cellAbove === "p") {
         updateTileState(x, y, cellAbove);
         updateTileState(x, y-1, ".");
-        console.log(x, y, getStateTile(x, y-1), getStateTile(x, y));
         updateTile(x, y, getGameTile(x, y-1));
         updateTile(x, y-1, "G");
+        anyFall = true;
+      } else if(cellAbove === "p") {
+        game = gameCopy;
+        gameState = gameStateCopy;
+        anyFall = false;
+        break;
       }
     }
-    y--;
   }
+  return anyFall;
 }
 
-console.log(gameState);
+function update() {
+  let anyFall = pieceUpdate();
+  if(!anyFall) {
+    for(var i=0;i<200;i++) {
+      if(getStateTile(i%10, Math.floor(i/10))==="p") {
+        updateTileState(i%10, Math.floor(i/10), "s");
+      }
+    }
+    addPiece(Math.floor(Math.random()*7));
+  }
+  setTimeout(update, 1000);
+}
+onInput("w", () => {
+  //future rotation
+})
+onInput("a", () => {
+  pieceUpdate();
+})
+onInput("s", () => {
+  pieceUpdate();
+})
+onInput("d", () => {
+  pieceUpdate();
+})
+
 update();
 // updateTile(7, 2, "P");
-console.log(gameState);
-setBackground(Black);
+// setBackground(White);
 
