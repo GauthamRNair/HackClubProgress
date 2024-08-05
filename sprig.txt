@@ -449,6 +449,14 @@ function updateTileState(x, y, newTile) {
 
 }
 
+function getGameTile(x, y) {
+  return game[(10*y)+x];
+}
+
+function getStateTile(x, y) {
+  return gameState[(10*y)+x];
+}
+
 function addPiece(pieceNum) {
   var piece = pieces[pieceNum][3];
   var spawnY = 1;
@@ -463,7 +471,7 @@ function addPiece(pieceNum) {
       if (cell===".") {cell = "G"} 
       else {
         updateTileState(x, y, "p")
-        if (game[(10*y)+x] != "G") {
+        if (getGameTile(x, y) != "G") {
           gameOver = true;
         }
       };
@@ -476,6 +484,25 @@ function addPiece(pieceNum) {
 
 // updateTile(0, 0, "B");
 addPiece(6);
+
+function update() {
+  let rowsRev = gameState.trim().split("\n").reverse();
+  var y = 19;
+  for(row of rowsRev.slice(0, rowsRev.length)) {
+    for(var x=0;x<row.length;x++) {
+      cell = row[x];
+      cellAbove = getStateTile(x, y-1);
+      if(cell === "." && cellAbove != ".") {
+        updateTileState(x, y, cellAbove);
+        addText(y.toString(), {x: 1, y: 0, color: color`3`});
+        updateTile(x, y, getGameTile(x, y-1));
+      }
+    }
+    y--;
+  }
+}
+
+update();
 
 setBackground(Black);
 
