@@ -419,6 +419,9 @@ var gameState = map`
 ..........
 ..........`
 
+var pieceType = -1;
+var pieceLoc = [-1, -1];
+
 function updateTile(x, y, newTile) {
   const rows = game.trim().split("\n"); // Trim excess spaces and split into rows
   const maxWidth = Math.max(...rows.map(row => row.length)); // Find the maximum row width
@@ -431,8 +434,7 @@ function updateTile(x, y, newTile) {
   rows[y] = updatedRow;
   game = rows.join("\n");
 
-  // Update the game display with the modified map
-  setMap(game);
+  
 }
 
 function updateTileState(x, y, newTile) {
@@ -459,11 +461,9 @@ function getStateTile(x, y) {
 
 function addPiece(pieceNum) {
   var piece = pieces[pieceNum][3];
-  var spawnY = 1;
-  pieceRows = piece.trim().split("\n");
-  if (pieceRows[0] === "..." || pieceRows[0] === "....") {
-    spawnY -= 1;
-  }
+  var pieceRows = piece.trim().split("\n");
+  pieceType = pieceNum;
+  pieceLoc = [5, 1];
   var y = 0;
   for(row of pieceRows) {
     var x = 4;
@@ -505,6 +505,9 @@ function pieceUpdate() {
       }
     }
   }
+  if(anyFall) {
+    pieceLoc[1]++;
+  }
   return anyFall;
 }
 
@@ -531,6 +534,9 @@ function movePieceLeft() {
       }
     }
   }
+  if(gameCopy!==game) {
+    pieceLoc[0]--;
+  }
 }
 
 function movePieceRight() {
@@ -556,10 +562,30 @@ function movePieceRight() {
       }
     }
   }
+  if(gameCopy!==game) {
+    pieceLoc[0]++;
+  }
 }
 
 function rotatePiece() {
-  aaaaaaaaaaaaaaaaaa
+  if(pieceType >= 0 && pieceLoc != [-1, -1]) {
+    var y = pieceLoc[1];
+    for(row of pieceRows) {
+      var x = 4;
+      for(cell of row) {
+        if (cell===".") {cell = "G"} 
+        else {
+          updateTileState(x, y, "p")
+          if (getGameTile(x, y) != "G") {
+            gameOver = true;
+          }
+        };
+        updateTile(x, y, cell);
+        x++;
+      }
+      y++;
+    }
+  }
 }
 
 function update() {
@@ -573,6 +599,8 @@ function update() {
     addPiece(Math.floor(Math.random()*7));
   }
   setTimeout(update, 1000);
+  // Update the game display with the modified map
+  setMap(game);
 }
 
 
@@ -587,6 +615,10 @@ onInput("s", () => {
 })
 onInput("d", () => {
   movePieceRight();
+})
+
+afterInput(() => {
+  setMap(game);
 })
 
 update();
