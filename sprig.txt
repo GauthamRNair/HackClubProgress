@@ -111,6 +111,96 @@ PP.
 PPP
 ...`],]
 
+var skirts = [[map`
+..
+..
+..
+.b`, map`
+....
+bbbb`, map`
+..
+..
+..
+b.`, map`
+bbbb
+....`], 
+              [map`
+...
+...
+.OO`, map`
+...
+.OO
+O..`, map`
+O..
+...
+.O.`, map`
+...
+OOO
+...`], 
+              [map`
+..D
+...
+.D.`, map`
+...
+DD.
+..D`, map`
+...
+...
+DD.`, map`
+...
+DDD
+...`], 
+              [map`
+...
+.g.
+..g`, map`
+...
+..g
+gg.`, map`
+...
+g..
+.g.`, map`
+..g
+gg.
+...`],
+              [map`
+...
+..R
+.R.`, map`
+...
+R..
+.RR`, map`
+...
+.R.
+R..`, map`
+R..
+.RR
+...`], 
+              [map`
+...
+.YY
+...`, map`...
+.YY
+...`, map`
+...
+.YY
+...`, map`
+...
+.YY
+...`], 
+              [map`
+...
+..P
+.P.`, map`
+...
+P.P
+.P.`, map`
+...
+P..
+.P.`, map`
+...
+PPP
+...`],]
 
 setLegend(
   [White, bitmap`
@@ -285,7 +375,7 @@ HHHHHHHHHHHHHHHH`],
 3333333333333333`],
 )
 
-
+var gameOver = false;
 var game = map`
 GGGGGGGGGG
 GGGGGGGGGG
@@ -307,6 +397,27 @@ GGGGGGGGGG
 GGGGGGGGGG
 GGGGGGGGGG
 GGGGGGGGGG`
+var gameState = map`
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........`
 
 function updateTile(x, y, newTile) {
   const rows = game.trim().split("\n"); // Trim excess spaces and split into rows
@@ -324,17 +435,47 @@ function updateTile(x, y, newTile) {
   setMap(game);
 }
 
-function addPiece(x, pieceNum) {
-  const piece = pieces[piece][3];
+function updateTileState(x, y, newTile) {
+  const rows = gameState.trim().split("\n"); // Trim excess spaces and split into rows
+  const maxWidth = Math.max(...rows.map(row => row.length)); // Find the maximum row width
+
+  // Update the specific tile at (x, y) with newTile
+  let updatedRow = rows[y];
+  updatedRow = updatedRow.padEnd(maxWidth, ' '); // Pad the row to match maxWidth
+  updatedRow = updatedRow.substring(0, x) + newTile + updatedRow.substring(x + 1);
+
+  rows[y] = updatedRow;
+  gameState = rows.join("\n");
+
+}
+
+function addPiece(pieceNum) {
+  var piece = pieces[pieceNum][3];
   var spawnY = 1;
   pieceRows = piece.trim().split("\n");
-  if (pieceRows[0] = "..." || pieceRows[0] = "....") {
+  if (pieceRows[0] === "..." || pieceRows[0] === "....") {
     spawnY -= 1;
+  }
+  var y = 0;
+  for(row of pieceRows) {
+    var x = 4;
+    for(cell of row) {
+      if (cell===".") {cell = "G"} 
+      else {
+        updateTileState(x, y, "p")
+        if (game[(10*y)+x] != "G") {
+          gameOver = true;
+        }
+      };
+      updateTile(x, y, cell);
+      x++;
+    }
+    y++;
   }
 }
 
-updateTile(0, 0, "B");
-
+// updateTile(0, 0, "B");
+addPiece(6);
 
 setBackground(Black);
 
