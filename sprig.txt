@@ -425,7 +425,7 @@ function updateTile(x, y, newTile) {
 
   // Update the specific tile at (x, y) with newTile
   let updatedRow = rows[y];
-  updatedRow = updatedRow.padEnd(maxWidth, ' '); // Pad the row to match maxWidth
+  // updatedRow = updatedRow.padEnd(maxWidth, ' '); // Pad the row to match maxWidth
   updatedRow = updatedRow.substring(0, x) + newTile + updatedRow.substring(x + 1);
 
   rows[y] = updatedRow;
@@ -450,11 +450,11 @@ function updateTileState(x, y, newTile) {
 }
 
 function getGameTile(x, y) {
-  return game[(10*y)+x];
+  return game[(11*y)+x];
 }
 
 function getStateTile(x, y) {
-  return gameState[(10*y)+x];
+  return gameState[(11*y)+x];
 }
 
 function addPiece(pieceNum) {
@@ -488,22 +488,27 @@ addPiece(6);
 function update() {
   let rowsRev = gameState.trim().split("\n").reverse();
   var y = 19;
-  for(row of rowsRev.slice(0, rowsRev.length)) {
+  for(row of rowsRev.slice(0, rowsRev.length-1)) {
     for(var x=0;x<row.length;x++) {
       cell = row[x];
       cellAbove = getStateTile(x, y-1);
+      if(cellAbove != "." && cellAbove != "\n") console.log(x, y);
       if(cell === "." && cellAbove != ".") {
+        console.log(x, y, getStateTile(x, y-1), getStateTile(x, y));
         updateTileState(x, y, cellAbove);
-        addText(getGameTile(x, y), {x: 1, y: 0, color: color`3`});
+        updateTileState(x, y-1, ".");
+        console.log(x, y, getStateTile(x, y-1), getStateTile(x, y));
         updateTile(x, y, getGameTile(x, y-1));
-        // more code needed for the pieces to actually fall, this is so frustrating
+        updateTile(x, y-1, "G");
       }
     }
     y--;
   }
 }
 
+console.log(gameState);
 update();
-
+// updateTile(7, 2, "P");
+console.log(gameState);
 setBackground(Black);
 
