@@ -508,6 +508,60 @@ function pieceUpdate() {
   return anyFall;
 }
 
+function movePieceLeft() {
+  const rows = game.trim().split("\n");
+  const columns = rows.map(row => row.split(""));
+
+  const gameCopy = game;
+  const gameStateCopy = gameState;
+  
+  for(var x=0;x<9;x++) {
+    for(var y=0;y<20;y++) {
+      cell = getStateTile(x, y);
+      cellRight = getStateTile(x+1, y);
+      if(cell === "." && cellRight === "p") {
+        updateTileState(x, y, cellRight);
+        updateTileState(x+1, y, ".");
+        updateTile(x, y, getGameTile(x+1, y));
+        updateTile(x+1, y, "G");
+      } else if(cellRight === "p") {
+        game = gameCopy;
+        gameState = gameStateCopy;
+        break;
+      }
+    }
+  }
+}
+
+function movePieceRight() {
+  const rows = game.trim().split("\n");
+  const columns = rows.map(row => row.split(""));
+
+  const gameCopy = game;
+  const gameStateCopy = gameState;
+  
+  for(var x=9;x>0;x--) {
+    for(var y=0;y<20;y++) {
+      cell = getStateTile(x, y);
+      cellRight = getStateTile(x-1, y);
+      if(cell === "." && cellRight === "p") {
+        updateTileState(x, y, cellRight);
+        updateTileState(x-1, y, ".");
+        updateTile(x, y, getGameTile(x-1, y));
+        updateTile(x-1, y, "G");
+      } else if(cellRight === "p") {
+        game = gameCopy;
+        gameState = gameStateCopy;
+        break;
+      }
+    }
+  }
+}
+
+function rotatePiece() {
+  aaaaaaaaaaaaaaaaaa
+}
+
 function update() {
   let anyFall = pieceUpdate();
   if(!anyFall) {
@@ -520,17 +574,19 @@ function update() {
   }
   setTimeout(update, 1000);
 }
+
+
 onInput("w", () => {
   //future rotation
 })
 onInput("a", () => {
-  pieceUpdate();
+  movePieceLeft();
 })
 onInput("s", () => {
   pieceUpdate();
 })
 onInput("d", () => {
-  pieceUpdate();
+  movePieceRight();
 })
 
 update();
