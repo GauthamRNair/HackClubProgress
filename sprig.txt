@@ -117,99 +117,6 @@ PPP
 ...`],
 ]
 
-// var skirts = [
-//   [map`
-// ..
-// ..
-// ..
-// .b`, map`
-// ....
-// bbbb`, map`
-// ..
-// ..
-// ..
-// b.`, map`
-// bbbb
-// ....`],
-//   [map`
-// ...
-// ...
-// .OO`, map`
-// ...
-// .OO
-// O..`, map`
-// O..
-// ...
-// .O.`, map`
-// ...
-// OOO
-// ...`],
-//   [map`
-// ..D
-// ...
-// .D.`, map`
-// ...
-// DD.
-// ..D`, map`
-// ...
-// ...
-// DD.`, map`
-// ...
-// DDD
-// ...`],
-//   [map`
-// ...
-// .g.
-// ..g`, map`
-// ...
-// ..g
-// gg.`, map`
-// ...
-// g..
-// .g.`, map`
-// ..g
-// gg.
-// ...`],
-//   [map`
-// ...
-// ..R
-// .R.`, map`
-// ...
-// R..
-// .RR`, map`
-// ...
-// .R.
-// R..`, map`
-// R..
-// .RR
-// ...`],
-//   [map`
-// ...
-// .YY
-// ...`, map`...
-// .YY
-// ...`, map`
-// ...
-// .YY
-// ...`, map`
-// ...
-// .YY
-// ...`],
-//   [map`
-// ...
-// ..P
-// .P.`, map`
-// ...
-// P.P
-// .P.`, map`
-// ...
-// P..
-// .P.`, map`
-// ...
-// PPP
-// ...`],
-// ]
-
 setLegend(
   [White, bitmap`
 2222222222222222
@@ -577,41 +484,53 @@ function movePieceRight() {
 }
 
 function rotatePiece() {
+  var revertRot = false;
   if (pieceType >= 0 && pieceLoc != [-1, -1]) {
     const gameCopy = game;
     const gameStateCopy = gameState;
-    
+
     var nextPiece = pieces[pieceType][(pieceRot + 1) % 4]
-    var nextYOffset = (pieceType===0) ? 2 : 1;
+    var nextYOffset = (pieceType === 0) ? 2 : 1;
     var pieceRows = nextPiece.trim().split("\n");
-    console.log(nextPiece);
-    var y = pieceLoc[1]-nextYOffset;
+    var y = pieceLoc[1] - nextYOffset;
     for (row of pieceRows) {
-      var x = pieceLoc[0]-1;
+      var x = pieceLoc[0] - 1;
       for (cell of row) {
-        if (x>=0 && x<10 && y>=0 && y<20) {
-          if (cell === ".") { 
+        if (x >= 0 && x < 10 && y >= 0 && y < 20) {
+          if (cell === ".") {
             cell = "G"
-            if (getStateTile(x, y) != ".") {
+            if (getStateTile(x, y) === "p") {
               updateTileState(x, y, ".");
+            } else if (getStateTile(x, y) === "s") {
+              cell = getGameTile(x, y);
             }
-          } 
-          else {
+          } else {
+            if (getStateTile(x, y) === "s") {
+              revertRot = true;
+              break;
+            }
             updateTileState(x, y, "p")
           };
           updateTile(x, y, cell);
+        } else {
+          revertRot = true;
+          break;
         }
         x++;
       }
       y++;
     }
-    if(gameCopy !== game) {
-      pieceRot = (pieceRot+1)%4
+    if (revertRot) {
+      game = gameCopy;
+      gameState = gameStateCopy;
+    }
+    if (gameCopy !== game) {
+      pieceRot = (pieceRot + 1) % 4
     }
   }
 }
 
-function update() {
+function gameUpdate() {
   let anyFall = pieceUpdate();
   if (!anyFall) {
     for (var i = 0; i < 200; i++) {
@@ -621,11 +540,23 @@ function update() {
     }
     addPiece(Math.floor(Math.random() * 7));
   }
-  setTimeout(update, 1000);
+  setTimeout(gameUpdate, 600);
   // Update the game display with the modified map
   setMap(game);
 }
 
+function clearRows() {
+  const rowsState = gameState.trim().split("\n").reverse();
+  const rows = game.trim().split("\n").reverse();
+  for(var i=0;i<rows.length;i++) {
+    if(rowsState[i] === "ssssssssss") {
+      rowsState[i] = rowsState[i+1].replaceAll("p", ".");
+      rows[i] = rows[i+1]
+    }
+  }
+  gameState = rowsState.reverse().join("\n");
+  game = rows.reverse().join("\n");
+}
 
 onInput("w", () => {
   rotatePiece();
@@ -641,9 +572,8 @@ onInput("d", () => {
 })
 
 afterInput(() => {
+  clearRows();
   setMap(game);
 })
 
-update();
-// updateTile(7, 2, "P");
-// setBackground(White);
+gameUpdate();
