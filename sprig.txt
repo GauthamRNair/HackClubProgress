@@ -18,7 +18,98 @@ const Green = "g"
 const Purple = "P"
 const Red = "R"
 
-var sticks = [[["b"], ["b"], ["b"], ["b"]], []]
+// Stick, L, L2, S, S2, Square, and Pyramid (order) 
+var pieces = [[map`
+.b
+.b
+.b
+.b`, map`
+....
+bbbb`, map`
+b.
+b.
+b.
+b.`, map`
+bbbb
+....`], 
+              [map`
+.O.
+.O.
+.OO`, map`
+...
+OOO
+O..`, map`
+OO.
+.O.
+.O.`, map`
+..O
+OOO
+...`], 
+              [map`
+.DD
+.D.
+.D.`, map`
+...
+DDD
+..D`, map`
+.D.
+.D.
+DD.`, map`
+D..
+DDD
+...`], 
+              [map`
+.g.
+.gg
+..g`, map`
+...
+.gg
+gg.`, map`
+g..
+gg.
+.g.`, map`
+.gg
+gg.
+...`],
+              [map`
+..R
+.RR
+.R.`, map`
+...
+RR.
+.RR`, map`
+.R.
+RR.
+R..`, map`
+RR.
+.RR
+...`], 
+              [map`
+.YY
+.YY
+...`, map`
+.YY
+.YY
+...`, map`
+.YY
+.YY
+...`, map`
+.YY
+.YY
+...`], 
+              [map`
+.P.
+.PP
+.P.`, map`
+...
+PPP
+.P.`, map`
+.P.
+PP.
+.P.`, map`
+.P.
+PPP
+...`],]
 
 
 setLegend(
@@ -218,19 +309,28 @@ GGGGGGGGGG
 GGGGGGGGGG`
 
 function updateTile(x, y, newTile) {
-    const rows = game.trim().split("\n"); // Trim excess spaces and split into rows
-    const maxWidth = Math.max(...rows.map(row => row.length)); // Find the maximum row width
+  const rows = game.trim().split("\n"); // Trim excess spaces and split into rows
+  const maxWidth = Math.max(...rows.map(row => row.length)); // Find the maximum row width
 
-    // Update the specific tile at (x, y) with newTile
-    let updatedRow = rows[y];
-    updatedRow = updatedRow.padEnd(maxWidth, ' '); // Pad the row to match maxWidth
-    updatedRow = updatedRow.substring(0, x) + newTile + updatedRow.substring(x + 1);
+  // Update the specific tile at (x, y) with newTile
+  let updatedRow = rows[y];
+  updatedRow = updatedRow.padEnd(maxWidth, ' '); // Pad the row to match maxWidth
+  updatedRow = updatedRow.substring(0, x) + newTile + updatedRow.substring(x + 1);
 
-    rows[y] = updatedRow;
-    game = rows.join("\n");
+  rows[y] = updatedRow;
+  game = rows.join("\n");
 
-    // Update the game display with the modified map
-    setMap(game);
+  // Update the game display with the modified map
+  setMap(game);
+}
+
+function addPiece(x, pieceNum) {
+  const piece = pieces[piece][3];
+  var spawnY = 1;
+  pieceRows = piece.trim().split("\n");
+  if (pieceRows[0] = "..." || pieceRows[0] = "....") {
+    spawnY -= 1;
+  }
 }
 
 updateTile(0, 0, "B");
