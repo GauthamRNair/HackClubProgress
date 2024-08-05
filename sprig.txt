@@ -19,20 +19,25 @@ const Purple = "P"
 const Red = "R"
 
 // Stick, L, L2, S, S2, Square, and Pyramid (order) 
-var pieces = [[map`
-.b
-.b
-.b
-.b`, map`
+var pieces = [
+  [map`
+..b.
+..b.
+..b.
+..b.`, map`
 ....
-bbbb`, map`
-b.
-b.
-b.
-b.`, map`
+....
 bbbb
-....`], 
-              [map`
+....`, map`
+.b..
+.b..
+.b..
+.b..`, map`
+....
+bbbb
+....
+....`],
+  [map`
 .O.
 .O.
 .OO`, map`
@@ -44,8 +49,8 @@ OO.
 .O.`, map`
 ..O
 OOO
-...`], 
-              [map`
+...`],
+  [map`
 .DD
 .D.
 .D.`, map`
@@ -57,8 +62,8 @@ DDD
 DD.`, map`
 D..
 DDD
-...`], 
-              [map`
+...`],
+  [map`
 .g.
 .gg
 ..g`, map`
@@ -71,7 +76,7 @@ gg.
 .gg
 gg.
 ...`],
-              [map`
+  [map`
 ..R
 .RR
 .R.`, map`
@@ -83,8 +88,8 @@ RR.
 R..`, map`
 RR.
 .RR
-...`], 
-              [map`
+...`],
+  [map`
 .YY
 .YY
 ...`, map`
@@ -96,8 +101,8 @@ RR.
 ...`, map`
 .YY
 .YY
-...`], 
-              [map`
+...`],
+  [map`
 .P.
 .PP
 .P.`, map`
@@ -109,98 +114,101 @@ PP.
 .P.`, map`
 .P.
 PPP
-...`],]
-
-var skirts = [[map`
-..
-..
-..
-.b`, map`
-....
-bbbb`, map`
-..
-..
-..
-b.`, map`
-bbbb
-....`], 
-              [map`
-...
-...
-.OO`, map`
-...
-.OO
-O..`, map`
-O..
-...
-.O.`, map`
-...
-OOO
-...`], 
-              [map`
-..D
-...
-.D.`, map`
-...
-DD.
-..D`, map`
-...
-...
-DD.`, map`
-...
-DDD
-...`], 
-              [map`
-...
-.g.
-..g`, map`
-...
-..g
-gg.`, map`
-...
-g..
-.g.`, map`
-..g
-gg.
 ...`],
-              [map`
-...
-..R
-.R.`, map`
-...
-R..
-.RR`, map`
-...
-.R.
-R..`, map`
-R..
-.RR
-...`], 
-              [map`
-...
-.YY
-...`, map`...
-.YY
-...`, map`
-...
-.YY
-...`, map`
-...
-.YY
-...`], 
-              [map`
-...
-..P
-.P.`, map`
-...
-P.P
-.P.`, map`
-...
-P..
-.P.`, map`
-...
-PPP
-...`],]
+]
+
+// var skirts = [
+//   [map`
+// ..
+// ..
+// ..
+// .b`, map`
+// ....
+// bbbb`, map`
+// ..
+// ..
+// ..
+// b.`, map`
+// bbbb
+// ....`],
+//   [map`
+// ...
+// ...
+// .OO`, map`
+// ...
+// .OO
+// O..`, map`
+// O..
+// ...
+// .O.`, map`
+// ...
+// OOO
+// ...`],
+//   [map`
+// ..D
+// ...
+// .D.`, map`
+// ...
+// DD.
+// ..D`, map`
+// ...
+// ...
+// DD.`, map`
+// ...
+// DDD
+// ...`],
+//   [map`
+// ...
+// .g.
+// ..g`, map`
+// ...
+// ..g
+// gg.`, map`
+// ...
+// g..
+// .g.`, map`
+// ..g
+// gg.
+// ...`],
+//   [map`
+// ...
+// ..R
+// .R.`, map`
+// ...
+// R..
+// .RR`, map`
+// ...
+// .R.
+// R..`, map`
+// R..
+// .RR
+// ...`],
+//   [map`
+// ...
+// .YY
+// ...`, map`...
+// .YY
+// ...`, map`
+// ...
+// .YY
+// ...`, map`
+// ...
+// .YY
+// ...`],
+//   [map`
+// ...
+// ..P
+// .P.`, map`
+// ...
+// P.P
+// .P.`, map`
+// ...
+// P..
+// .P.`, map`
+// ...
+// PPP
+// ...`],
+// ]
 
 setLegend(
   [White, bitmap`
@@ -420,6 +428,7 @@ var gameState = map`
 ..........`
 
 var pieceType = -1;
+var pieceRot = 3;
 var pieceLoc = [-1, -1];
 
 function updateTile(x, y, newTile) {
@@ -434,7 +443,7 @@ function updateTile(x, y, newTile) {
   rows[y] = updatedRow;
   game = rows.join("\n");
 
-  
+
 }
 
 function updateTileState(x, y, newTile) {
@@ -452,11 +461,11 @@ function updateTileState(x, y, newTile) {
 }
 
 function getGameTile(x, y) {
-  return game[(11*y)+x];
+  return game[(11 * y) + x];
 }
 
 function getStateTile(x, y) {
-  return gameState[(11*y)+x];
+  return gameState[(11 * y) + x];
 }
 
 function addPiece(pieceNum) {
@@ -464,12 +473,12 @@ function addPiece(pieceNum) {
   var pieceRows = piece.trim().split("\n");
   pieceType = pieceNum;
   pieceLoc = [5, 1];
+  pieceRot = 3;
   var y = 0;
-  for(row of pieceRows) {
+  for (row of pieceRows) {
     var x = 4;
-    for(cell of row) {
-      if (cell===".") {cell = "G"} 
-      else {
+    for (cell of row) {
+      if (cell === ".") { cell = "G" } else {
         updateTileState(x, y, "p")
         if (getGameTile(x, y) != "G") {
           gameOver = true;
@@ -487,17 +496,17 @@ function pieceUpdate() {
   let anyFall = false;
   const gameCopy = game;
   const gameStateCopy = gameState;
-  for(var y=19;y>0;y--) {
-    for(var x=0;x<10;x++) {
+  for (var y = 19; y > 0; y--) {
+    for (var x = 0; x < 10; x++) {
       cell = getStateTile(x, y);
-      cellAbove = getStateTile(x, y-1);
-      if(cell === "." && cellAbove === "p") {
+      cellAbove = getStateTile(x, y - 1);
+      if (cell === "." && cellAbove === "p") {
         updateTileState(x, y, cellAbove);
-        updateTileState(x, y-1, ".");
-        updateTile(x, y, getGameTile(x, y-1));
-        updateTile(x, y-1, "G");
+        updateTileState(x, y - 1, ".");
+        updateTile(x, y, getGameTile(x, y - 1));
+        updateTile(x, y - 1, "G");
         anyFall = true;
-      } else if(cellAbove === "p") {
+      } else if (cellAbove === "p") {
         game = gameCopy;
         gameState = gameStateCopy;
         anyFall = false;
@@ -505,7 +514,7 @@ function pieceUpdate() {
       }
     }
   }
-  if(anyFall) {
+  if (anyFall) {
     pieceLoc[1]++;
   }
   return anyFall;
@@ -517,24 +526,24 @@ function movePieceLeft() {
 
   const gameCopy = game;
   const gameStateCopy = gameState;
-  
-  for(var x=0;x<9;x++) {
-    for(var y=0;y<20;y++) {
+
+  for (var x = 0; x < 9; x++) {
+    for (var y = 0; y < 20; y++) {
       cell = getStateTile(x, y);
-      cellRight = getStateTile(x+1, y);
-      if(cell === "." && cellRight === "p") {
+      cellRight = getStateTile(x + 1, y);
+      if (cell === "." && cellRight === "p") {
         updateTileState(x, y, cellRight);
-        updateTileState(x+1, y, ".");
-        updateTile(x, y, getGameTile(x+1, y));
-        updateTile(x+1, y, "G");
-      } else if(cellRight === "p") {
+        updateTileState(x + 1, y, ".");
+        updateTile(x, y, getGameTile(x + 1, y));
+        updateTile(x + 1, y, "G");
+      } else if (cellRight === "p") {
         game = gameCopy;
         gameState = gameStateCopy;
         break;
       }
     }
   }
-  if(gameCopy!==game) {
+  if (gameCopy !== game) {
     pieceLoc[0]--;
   }
 }
@@ -545,58 +554,72 @@ function movePieceRight() {
 
   const gameCopy = game;
   const gameStateCopy = gameState;
-  
-  for(var x=9;x>0;x--) {
-    for(var y=0;y<20;y++) {
+
+  for (var x = 9; x > 0; x--) {
+    for (var y = 0; y < 20; y++) {
       cell = getStateTile(x, y);
-      cellRight = getStateTile(x-1, y);
-      if(cell === "." && cellRight === "p") {
+      cellRight = getStateTile(x - 1, y);
+      if (cell === "." && cellRight === "p") {
         updateTileState(x, y, cellRight);
-        updateTileState(x-1, y, ".");
-        updateTile(x, y, getGameTile(x-1, y));
-        updateTile(x-1, y, "G");
-      } else if(cellRight === "p") {
+        updateTileState(x - 1, y, ".");
+        updateTile(x, y, getGameTile(x - 1, y));
+        updateTile(x - 1, y, "G");
+      } else if (cellRight === "p") {
         game = gameCopy;
         gameState = gameStateCopy;
         break;
       }
     }
   }
-  if(gameCopy!==game) {
+  if (gameCopy !== game) {
     pieceLoc[0]++;
   }
 }
 
 function rotatePiece() {
-  if(pieceType >= 0 && pieceLoc != [-1, -1]) {
-    var y = pieceLoc[1];
-    for(row of pieceRows) {
-      var x = 4;
-      for(cell of row) {
-        if (cell===".") {cell = "G"} 
-        else {
-          updateTileState(x, y, "p")
-          if (getGameTile(x, y) != "G") {
-            gameOver = true;
-          }
-        };
-        updateTile(x, y, cell);
+  if (pieceType >= 0 && pieceLoc != [-1, -1]) {
+    const gameCopy = game;
+    const gameStateCopy = gameState;
+    
+    var nextPiece = pieces[pieceType][(pieceRot + 1) % 4]
+    var nextYOffset = (pieceType===0) ? 2 : 1;
+    var pieceRows = nextPiece.trim().split("\n");
+    console.log(nextPiece);
+    var y = pieceLoc[1]-nextYOffset;
+    for (row of pieceRows) {
+      var x = pieceLoc[0]-1;
+      for (cell of row) {
+        if (x>=0 && x<10 && y>=0 && y<20) {
+          if (cell === ".") { 
+            cell = "G"
+            if (getStateTile(x, y) != ".") {
+              updateTileState(x, y, ".");
+            }
+          } 
+          else {
+            updateTileState(x, y, "p")
+          };
+          updateTile(x, y, cell);
+        }
         x++;
       }
       y++;
+    }
+    if(gameCopy !== game) {
+      pieceRot = (pieceRot+1)%4
     }
   }
 }
 
 function update() {
   let anyFall = pieceUpdate();
-  if(!anyFall) {
-    for(var i=0;i<200;i++) {
-      if(getStateTile(i%10, Math.floor(i/10))==="p") {
-        updateTileState(i%10, Math.floor(i/10), "s");
+  if (!anyFall) {
+    for (var i = 0; i < 200; i++) {
+      if (getStateTile(i % 10, Math.floor(i / 10)) === "p") {
+        updateTileState(i % 10, Math.floor(i / 10), "s");
       }
     }
-    addPiece(Math.floor(Math.random()*7));
+    addPiece(Math.floor(Math.random() * 7));
   }
   setTimeout(update, 1000);
   // Update the game display with the modified map
@@ -605,7 +628,7 @@ function update() {
 
 
 onInput("w", () => {
-  //future rotation
+  rotatePiece();
 })
 onInput("a", () => {
   movePieceLeft();
@@ -624,4 +647,3 @@ afterInput(() => {
 update();
 // updateTile(7, 2, "P");
 // setBackground(White);
-
