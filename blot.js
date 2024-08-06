@@ -1,31 +1,38 @@
-// check out the workshop tab to get started
-// welcome to blot!
+setDocDimensions(800, 600);
 
-// check out this guide to learn how to program in blot
-// https://blot.hackclub.com/editor?guide=start
+function generateBuilding(x, y, width, height) {
+    const turtle = new bt.Turtle().goTo([x, y]);
+    turtle.down()
+        .right(90).forward(width)  // Bottom side
+        .left(90).forward(height)  // Right side
+        .left(90).forward(width)   // Top side
+        .left(90).forward(height); // Left side
+    return turtle.lines();
+}
 
-const width = Math.min(imageHeight, imageWidth);
-const height = Math.min(imageHeight, imageWidth);
+function generateCity(numBuildings, cityWidth, cityHeight) {
+    const buildings = [];
+    const baseHeight = 50; // Minimum height for buildings
+    const maxHeight = cityHeight * 0.8; // Maximum height for buildings
+    const baseWidth = 30; // Minimum width for buildings
+    const maxWidth = cityWidth * 0.1; // Maximum width for buildings
 
-setDocDimensions(width*0.5, height*0.5);
+    for (let i = 0; i < numBuildings; i++) {
+        const width = bt.randInRange(baseWidth, maxWidth);
+        const height = bt.randInRange(baseHeight, maxHeight);
+        const x = bt.randInRange(0, cityWidth - width);
+        const y = cityHeight - height;
 
-// store final lines here
-const finalLines = [];
+        buildings.push(generateBuilding(x, y, width, height));
+    }
 
-// create a polyline
-const polyline = [
-  [30, 90],
-  [100, 90],
-  [100, 30],
-  [30, 30],
-  [30, 90]
-];
+    return buildings;
+}
 
-// add the polyline to the final lines
-finalLines.push(polyline);
+const cityWidth = 800;
+const cityHeight = 600;
+const numBuildings = 50;
 
-// transform lines using the toolkit
-bt.rotate(finalLines, 45);
-
-// draw it
-drawLines(finalLines);
+const city = generateCity(numBuildings, cityWidth, cityHeight);
+console.log(bt.merge(bt.merge(city)));
+drawLines(bt.merge(city));
