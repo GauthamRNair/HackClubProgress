@@ -378,6 +378,8 @@ function getStateTile(x, y) {
 function addPiece(pieceNum) {
   var piece = pieces[pieceNum][3];
   var pieceRows = piece.trim().split("\n");
+  const gameCopy = game;
+  const gameStateCopy = gameState;
   pieceType = pieceNum;
   pieceLoc = [5, 1];
   pieceRot = 3;
@@ -385,10 +387,18 @@ function addPiece(pieceNum) {
   for (row of pieceRows) {
     var x = 4;
     for (cell of row) {
-      if (cell === ".") { cell = "G" } else {
+      if (cell === ".") { 
+        cell = "G"
+        if (getStateTile(x, y) === "s") {
+          cell = getGameTile(x, y);
+        }
+      } else {
         updateTileState(x, y, "p")
         if (getGameTile(x, y) != "G") {
           gameOver = true;
+          game = gameCopy;
+          gameState = gameStateCopy;
+          break;
         }
       };
       updateTile(x, y, cell);
@@ -538,8 +548,10 @@ function gameUpdate() {
         updateTileState(i % 10, Math.floor(i / 10), "s");
       }
     }
+    clearRows();
     addPiece(Math.floor(Math.random() * 7));
   }
+  
   setTimeout(gameUpdate, 600);
   // Update the game display with the modified map
   setMap(game);
@@ -550,36 +562,20 @@ function clearRows() {
   var rows = game.trim().split("\n").reverse();
 
   //clear all lines
-  let anyClears = false;
   for(var i=0;i<rows.length;i++) {
     if(rowsState[i] === "ssssssssss") {
-      rowsState[i] = "..........";
-      rows[i] = "GGGGGGGGGG";
-      anyClears = true;
+      rowsState.splice(i, 1);
+      rowsState.push("..........");
+      rows.splice(i, 1);
+      rows.push("GGGGGGGGGG");
     }
   }
 
   //move evrythin down
-  rowsState = rowsState.reverse();
-  rows = rows.reverse();
-  if(anyClears) {
-    let fallingPass = false;
-    while(fallingPass) {
-      fallingPass = false;
-      for(var i=15;i<rows.length;i++) {
-        if(rowsState[i] === "..........") {
-          rowsState[i] = rowsState[i-1].split('').map((elem, index) => (elem==="p") ? "." : elem).join("");
-          rows[i] = rows[i-1].split('').map((elem, index) => (rowsState[i][index]==="p") ? "G" : elem).join("");
-          rowsState[i-1] = "..........";
-          rows[i-1] = "GGGGGGGGGG";
-          fallingPass = true;
-        }
-      }
-    }
-  }
   
-  gameState = rowsState.join("\n");
-  game = rows.join("\n");
+  
+  gameState = rowsState.reverse().join("\n");
+  game = rows.reverse().join("\n");
 }
 
 onInput("w", () => {
@@ -596,7 +592,6 @@ onInput("d", () => {
 })
 
 afterInput(() => {
-  clearRows();
   setMap(game);
 })
 
