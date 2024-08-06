@@ -338,6 +338,10 @@ var pieceType = -1;
 var pieceRot = 3;
 var pieceLoc = [-1, -1];
 
+var high = 0;
+var score = 0;
+var lines = 0;
+
 function updateTile(x, y, newTile) {
   const rows = game.trim().split("\n"); // Trim excess spaces and split into rows
   const maxWidth = Math.max(...rows.map(row => row.length)); // Find the maximum row width
@@ -387,7 +391,7 @@ function addPiece(pieceNum) {
   for (row of pieceRows) {
     var x = 4;
     for (cell of row) {
-      if (cell === ".") { 
+      if (cell === ".") {
         cell = "G"
         if (getStateTile(x, y) === "s") {
           cell = getGameTile(x, y);
@@ -551,8 +555,11 @@ function gameUpdate() {
     clearRows();
     addPiece(Math.floor(Math.random() * 7));
   }
-  
-  setTimeout(gameUpdate, 600);
+  if (!gameOver) {
+    setTimeout(gameUpdate, 600);
+  } else {
+    startGame();
+  }
   // Update the game display with the modified map
   setMap(game);
 }
@@ -561,21 +568,87 @@ function clearRows() {
   var rowsState = gameState.trim().split("\n").reverse();
   var rows = game.trim().split("\n").reverse();
 
+  let numClear = 0;
+
   //clear all lines
-  for(var i=0;i<rows.length;i++) {
-    if(rowsState[i] === "ssssssssss") {
+  for (var i = 0; i < rows.length; i++) {
+    if (rowsState[i] === "ssssssssss") {
       rowsState.splice(i, 1);
       rowsState.push("..........");
       rows.splice(i, 1);
       rows.push("GGGGGGGGGG");
+      numClear++;
     }
   }
 
-  //move evrythin down
-  
-  
+  switch (numClear) {
+    case 1:
+      score += 100;
+      break;
+    case 2:
+      score += 300;
+      break;
+    case 3:
+      score += 500
+      break;
+    case 4:
+      score += 800;
+      break;
+  }
+
   gameState = rowsState.reverse().join("\n");
   game = rows.reverse().join("\n");
+}
+
+function startGame() {
+  high = Math.max(high, score);
+  score = 0;
+  if (gameOver) {
+    gameOver = false;
+    game = map`
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG
+    GGGGGGGGGG`;
+    gameState = map`
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........
+    ..........`;
+  }
+  gameUpdate();
 }
 
 onInput("w", () => {
@@ -595,4 +668,4 @@ afterInput(() => {
   setMap(game);
 })
 
-gameUpdate();
+startGame();
