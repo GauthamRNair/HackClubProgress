@@ -546,16 +546,40 @@ function gameUpdate() {
 }
 
 function clearRows() {
-  const rowsState = gameState.trim().split("\n").reverse();
-  const rows = game.trim().split("\n").reverse();
+  var rowsState = gameState.trim().split("\n").reverse();
+  var rows = game.trim().split("\n").reverse();
+
+  //clear all lines
+  let anyClears = false;
   for(var i=0;i<rows.length;i++) {
     if(rowsState[i] === "ssssssssss") {
-      rowsState[i] = rowsState[i+1].replaceAll("p", ".");
-      rows[i] = rows[i+1]
+      rowsState[i] = "..........";
+      rows[i] = "GGGGGGGGGG";
+      anyClears = true;
     }
   }
-  gameState = rowsState.reverse().join("\n");
-  game = rows.reverse().join("\n");
+
+  //move evrythin down
+  rowsState = rowsState.reverse();
+  rows = rows.reverse();
+  if(anyClears) {
+    let fallingPass = false;
+    while(fallingPass) {
+      fallingPass = false;
+      for(var i=15;i<rows.length;i++) {
+        if(rowsState[i] === "..........") {
+          rowsState[i] = rowsState[i-1].split('').map((elem, index) => (elem==="p") ? "." : elem).join("");
+          rows[i] = rows[i-1].split('').map((elem, index) => (rowsState[i][index]==="p") ? "G" : elem).join("");
+          rowsState[i-1] = "..........";
+          rows[i-1] = "GGGGGGGGGG";
+          fallingPass = true;
+        }
+      }
+    }
+  }
+  
+  gameState = rowsState.join("\n");
+  game = rows.join("\n");
 }
 
 onInput("w", () => {
