@@ -1,38 +1,38 @@
+// Import the necessary functions and classes from the Blot toolkit
+// const { Turtle, bt } = blotToolkit;
+
+// Function to draw a star with the given number of points, size, and center
+function drawStar(points, size, center) {
+  const [cx, cy] = center; // Center coordinates of the star
+  const step = Math.PI / points; // Angle step between star points
+
+  // Create a new turtle instance
+  const starTurtle = new bt.Turtle().up().goTo([cx, cy - size]).down();
+
+  for (let i = 0; i < points * 2; i++) {
+    const angle = i * step;
+    const radius = i % 2 === 0 ? size : size / 2;
+    const x = cx + Math.sin(angle) * radius;
+    const y = cy - Math.cos(angle) * radius;
+    starTurtle.goTo([x, y]);
+  }
+
+  // Complete the star shape by connecting the last point to the first
+  starTurtle.goTo([cx, cy - size]);
+
+  return starTurtle.lines();
+}
+
+// Set document dimensions
 setDocDimensions(800, 600);
 
-function generateBuilding(x, y, width, height) {
-    const turtle = new bt.Turtle().goTo([x, y]);
-    turtle.down()
-        .right(90).forward(width)  // Bottom side
-        .left(90).forward(height)  // Right side
-        .left(90).forward(width)   // Top side
-        .left(90).forward(height); // Left side
-    return turtle.lines();
-}
+// Parameters for the star
+const points = 5; // Number of star points
+const size = 50; // Size of the star
+const center = [400, 300]; // Center of the star
 
-function generateCity(numBuildings, cityWidth, cityHeight) {
-    const buildings = [];
-    const baseHeight = 50; // Minimum height for buildings
-    const maxHeight = cityHeight * 0.8; // Maximum height for buildings
-    const baseWidth = 30; // Minimum width for buildings
-    const maxWidth = cityWidth * 0.1; // Maximum width for buildings
+// Draw the star and get the polylines
+const starPolylines = drawStar(points, size, center);
 
-    for (let i = 0; i < numBuildings; i++) {
-        const width = bt.randInRange(baseWidth, maxWidth);
-        const height = bt.randInRange(baseHeight, maxHeight);
-        const x = bt.randInRange(0, cityWidth - width);
-        const y = cityHeight - height;
-
-        buildings.push(generateBuilding(x, y, width, height));
-    }
-
-    return buildings;
-}
-
-const cityWidth = 800;
-const cityHeight = 600;
-const numBuildings = 50;
-
-const city = generateCity(numBuildings, cityWidth, cityHeight);
-console.log(bt.merge(bt.merge(city)));
-drawLines(bt.merge(city));
+// Draw the star polylines on the canvas
+drawLines(starPolylines, { stroke: 'black', width: 2 });
