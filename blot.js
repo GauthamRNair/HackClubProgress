@@ -1,38 +1,22 @@
-// Import the necessary functions and classes from the Blot toolkit
-// const { Turtle, bt } = blotToolkit;
+const bt = require('blot');
 
-// Function to draw a star with the given number of points, size, and center
-function drawStar(points, size, center) {
-  const [cx, cy] = center; // Center coordinates of the star
-  const step = Math.PI / points; // Angle step between star points
+const canvas = bt.createCanvas(800, 600);
+const ctx = canvas.getContext('2d');
 
-  // Create a new turtle instance
-  const starTurtle = new bt.Turtle().up().goTo([cx, cy - size]).down();
-
-  for (let i = 0; i < points * 2; i++) {
-    const angle = i * step;
-    const radius = i % 2 === 0 ? size : size / 2;
-    const x = cx + Math.sin(angle) * radius;
-    const y = cy - Math.cos(angle) * radius;
-    starTurtle.goTo([x, y]);
-  }
-
-  // Complete the star shape by connecting the last point to the first
-  starTurtle.goTo([cx, cy - size]);
-
-  return starTurtle.lines();
+// Function to generate random stars
+function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < 100; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const size = Math.random() * 2;
+        
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+    }
 }
 
-// Set document dimensions
-setDocDimensions(800, 600);
-
-// Parameters for the star
-const points = 5; // Number of star points
-const size = 50; // Size of the star
-const center = [400, 300]; // Center of the star
-
-// Draw the star and get the polylines
-const starPolylines = drawStar(points, size, center);
-
-// Draw the star polylines on the canvas
-drawLines(starPolylines, { stroke: 'black', width: 2 });
+// Draw the starry sky
+drawStars();
